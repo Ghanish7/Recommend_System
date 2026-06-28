@@ -14,13 +14,13 @@ export default function Home({ onNavigate, onMovieSelect }) {
     setLoading(true);
     setError(null);
 
-    const fetchHollywood = fetch('https://cinematch-backend-0a50.onrender.com/movies?industry=Hollywood&limit=60')
+    const fetchHollywood = fetch("https://cinematch-backend-0a50.onrender.com/movies?industry=Hollywood&limit=60")
       .then(res => res.ok ? res.json() : Promise.reject("Failed Hollywood"));
       
-    const fetchBollywood = fetch('https://cinematch-backend-0a50.onrender.com/movies?industry=Bollywood&limit=10')
+    const fetchBollywood = fetch("https://cinematch-backend-0a50.onrender.com/movies?industry=Bollywood&limit=10")
       .then(res => res.ok ? res.json() : Promise.reject("Failed Bollywood"));
       
-    const fetchTollywood = fetch('https://cinematch-backend-0a50.onrender.com/movies?industry=Tollywood&limit=10')
+    const fetchTollywood = fetch("https://cinematch-backend-0a50.onrender.com/movies?industry=Tollywood&limit=10")
       .then(res => res.ok ? res.json() : Promise.reject("Failed Tollywood"));
 
     Promise.all([fetchHollywood, fetchBollywood, fetchTollywood])
