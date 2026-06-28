@@ -94,7 +94,7 @@ class MovieRecommender:
             )
         )
 
-        def get_user_watch_history(self, user_id, top_n=10):
+    def get_user_watch_history(self, user_id, top_n=10):
         """
         Return the user's highest-rated movies.
         """
