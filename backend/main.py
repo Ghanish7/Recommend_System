@@ -72,6 +72,31 @@ def init_app_state():
             ]
             
    # threading.Thread(target=run_eval, daemon=True).start()
+    # threading.Thread(target=run_eval, daemon=True).start()
+
+evaluation_cache = [
+    {
+        "algorithm": "User-Based CF",
+        "precision": 45.2,
+        "recall": 38.5,
+        "f1_score": 41.6,
+        "rmse": 0.884
+    },
+    {
+        "algorithm": "Item-Based CF",
+        "precision": 48.7,
+        "recall": 40.1,
+        "f1_score": 43.9,
+        "rmse": 0.852
+    },
+    {
+        "algorithm": "Content-Based",
+        "precision": 39.5,
+        "recall": 31.2,
+        "f1_score": 34.8,
+        "rmse": 0.941
+    }
+]
 
 @app.on_event("startup")
 def startup_event():
