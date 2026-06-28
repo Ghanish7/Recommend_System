@@ -13,7 +13,7 @@ export default function Evaluation() {
   const fetchMetrics = () => {
     setLoading(true);
     setError(null);
-    fetch('http://127.0.0.1:8000/evaluate')
+    fetch('https://cinematch-backend-0a50.onrender.com/evaluate')
       .then(res => {
         if (!res.ok) throw new Error("Failed to load evaluation metrics");
         return res.json();

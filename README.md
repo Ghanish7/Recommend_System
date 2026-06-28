@@ -35,7 +35,7 @@ Navigate to the root workspace and run the FastAPI server:
 pip install fastapi uvicorn pandas numpy scikit-learn scipy requests
 python backend/main.py
 ```
-The backend server will run on `http://127.0.0.1:8000`. On startup, it will automatically download the MovieLens dataset from GroupLens, extract it to `/backend/data`, and pre-compute similarity matrices and evaluation metrics.
+The backend server will run on `https://cinematch-backend-0a50.onrender.com`. On startup, it will automatically download the MovieLens dataset from GroupLens, extract it to `/backend/data`, and pre-compute similarity matrices and evaluation metrics.
 
 ### 3. Run the Frontend
 Navigate to the `/frontend` directory and start the Vite dev server:

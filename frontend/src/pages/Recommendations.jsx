@@ -33,13 +33,13 @@ export default function Recommendations({ selectedUserId, onMovieSelect, onNavig
     setLoading(true);
     setError(null);
     
-    const cfPromise = fetch(`http://127.0.0.1:8000/recommend/collaborative/${selectedUserId}?method=${cfMethod}`)
+    const cfPromise = fetch(`https://cinematch-backend-0a50.onrender.com/recommend/collaborative/${selectedUserId}?method=${cfMethod}`)
       .then(res => res.ok ? res.json() : Promise.reject("CF recommendations failed"));
       
-    const hybridPromise = fetch(`http://127.0.0.1:8000/recommend/hybrid/${selectedUserId}`)
+    const hybridPromise = fetch(`https://cinematch-backend-0a50.onrender.com/recommend/hybrid/${selectedUserId}`)
       .then(res => res.ok ? res.json() : Promise.reject("Hybrid recommendations failed"));
       
-    const historyPromise = fetch(`http://127.0.0.1:8000/users?limit=50`)
+    const historyPromise = fetch(`https://cinematch-backend-0a50.onrender.com/users?limit=50`)
       .then(res => res.ok ? res.json() : Promise.reject("Users load failed"))
       .then(data => {
         const userProf = data.users.find(u => u.userId === selectedUserId);
@@ -70,7 +70,7 @@ export default function Recommendations({ selectedUserId, onMovieSelect, onNavig
 
   const fetchContentBased = (movieId) => {
     setLoadingCb(true);
-    fetch(`http://127.0.0.1:8000/recommend/content/${movieId}`)
+    fetch(`https://cinematch-backend-0a50.onrender.com/recommend/content/${movieId}`)
       .then(res => {
         if (!res.ok) throw new Error("Content recommendations failed");
         return res.json();

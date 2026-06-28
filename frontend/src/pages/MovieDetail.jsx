@@ -22,13 +22,13 @@ export default function MovieDetail({ movieId, onBack, onMovieSelect }) {
     setPosterUrl(null);
     
     // Fetch details
-    const movieFetchPromise = fetch(`http://127.0.0.1:8000/movies/${movieId}`)
+    const movieFetchPromise = fetch(`https://cinematch-backend-0a50.onrender.com/movies/${movieId}`)
       .then(res => {
         if (!res.ok) throw new Error("Movie details not found");
         return res.json();
       });
 
-    const similarFetchPromise = fetch(`http://127.0.0.1:8000/recommend/content/${movieId}`)
+    const similarFetchPromise = fetch(`https://cinematch-backend-0a50.onrender.com/recommend/content/${movieId}`)
       .then(res => res.ok ? res.json() : Promise.reject("Failed to fetch similar movies"));
 
     Promise.all([movieFetchPromise, similarFetchPromise])

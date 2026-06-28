@@ -10,7 +10,7 @@ export default function UserSelect({ selectedUserId, setSelectedUserId, onNaviga
   const [selectedUserDetail, setSelectedUserDetail] = useState(null);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/users?limit=50')
+    fetch('https://cinematch-backend-0a50.onrender.com/users?limit=50')
       .then(res => {
         if (!res.ok) throw new Error("Failed to load users");
         return res.json();
