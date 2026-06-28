@@ -1,3 +1,4 @@
+import { API_URL } from "../config";
 import React, { useEffect, useState } from 'react';
 import { ArrowLeft, Film, HelpCircle, Star, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -22,13 +23,13 @@ export default function MovieDetail({ movieId, onBack, onMovieSelect }) {
     setPosterUrl(null);
     
     // Fetch details
-    const movieFetchPromise = fetch(`https://cinematch-backend-0a50.onrender.com/movies/${movieId}`)
+    const movieFetchPromise = fetch(`${API_URL}/movies/${movieId}`)
       .then(res => {
         if (!res.ok) throw new Error("Movie details not found");
         return res.json();
       });
 
-    const similarFetchPromise = fetch(`https://cinematch-backend-0a50.onrender.com/recommend/content/${movieId}`)
+    const similarFetchPromise = fetch(`${API_URL}/recommend/content/${movieId}`)
       .then(res => res.ok ? res.json() : Promise.reject("Failed to fetch similar movies"));
 
     Promise.all([movieFetchPromise, similarFetchPromise])
@@ -45,7 +46,7 @@ export default function MovieDetail({ movieId, onBack, onMovieSelect }) {
           return;
         }
 
-        const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=pageimages&piprop=original&titles=${encodeURIComponent(cleanSearchTitle)}`;
+        const searchUrl = `${API_URL}/wiki/poster?title=${encodeURIComponent(cleanSearchTitle)}`;
         fetch(searchUrl)
           .then(res => res.json())
           .then(data => {

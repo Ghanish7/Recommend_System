@@ -1,3 +1,4 @@
+import { API_URL } from "../config";
 import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { BarChart2, Info, Loader2, RefreshCw, AlertTriangle } from 'lucide-react';
@@ -13,7 +14,7 @@ export default function Evaluation() {
   const fetchMetrics = () => {
     setLoading(true);
     setError(null);
-    fetch('https://cinematch-backend-0a50.onrender.com/evaluate')
+    fetch(`${API_URL}/evaluate`)
       .then(res => {
         if (!res.ok) throw new Error("Failed to load evaluation metrics");
         return res.json();

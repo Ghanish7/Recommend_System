@@ -1,3 +1,4 @@
+import { API_URL } from "../config";
 import React, { useEffect, useState } from 'react';
 import { User, Users, ArrowRight, Film, Star, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -10,7 +11,7 @@ export default function UserSelect({ selectedUserId, setSelectedUserId, onNaviga
   const [selectedUserDetail, setSelectedUserDetail] = useState(null);
 
   useEffect(() => {
-    fetch('https://cinematch-backend-0a50.onrender.com/users?limit=50')
+    fetch(`${API_URL}/users?limit=50`)
       .then(res => {
         if (!res.ok) throw new Error("Failed to load users");
         return res.json();

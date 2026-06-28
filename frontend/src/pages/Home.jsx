@@ -1,3 +1,4 @@
+import { API_URL } from "../config";
 import React, { useEffect, useState } from 'react';
 import { Sparkles, ArrowRight, TrendingUp, ShieldCheck, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -14,13 +15,13 @@ export default function Home({ onNavigate, onMovieSelect }) {
     setLoading(true);
     setError(null);
 
-    const fetchHollywood = fetch("https://cinematch-backend-0a50.onrender.com/movies?industry=Hollywood&limit=60")
+    const fetchHollywood = fetch(`${API_URL}/movies?industry=Hollywood&limit=60`)
       .then(res => res.ok ? res.json() : Promise.reject("Failed Hollywood"));
       
-    const fetchBollywood = fetch("https://cinematch-backend-0a50.onrender.com/movies?industry=Bollywood&limit=10")
+    const fetchBollywood = fetch(`${API_URL}/movies?industry=Bollywood&limit=10`)
       .then(res => res.ok ? res.json() : Promise.reject("Failed Bollywood"));
       
-    const fetchTollywood = fetch("https://cinematch-backend-0a50.onrender.com/movies?industry=Tollywood&limit=10")
+    const fetchTollywood = fetch(`${API_URL}/movies?industry=Tollywood&limit=10`)
       .then(res => res.ok ? res.json() : Promise.reject("Failed Tollywood"));
 
     Promise.all([fetchHollywood, fetchBollywood, fetchTollywood])
