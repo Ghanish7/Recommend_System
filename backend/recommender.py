@@ -17,46 +17,71 @@ class MovieRecommender:
         self._prepare_data()
         
     def _prepare_data(self):
-        # 1. Build User-Item Matrix
-        self.user_item_matrix = self.ratings_df.pivot(index='userId', columns='movieId', values='rating')
-        # Mean ratings for centering (optional, helpful for centering User-Based CF)
-        self.user_means = self.user_item_matrix.mean(axis=1)
-        
-        # User-item filled with 0 for similarity computations
-        self.user_item_filled = self.user_item_matrix.fillna(0)
-        
-        # 2. Compute User-User Cosine Similarity
-        self.user_similarity = cosine_similarity(self.user_item_filled)
-        # Convert to DataFrame for easier lookup
+    # Build User-Item Matrix
+    self.user_item_matrix = self.ratings_df.pivot(
+        index='userId',
+        columns='movieId',
+        values='rating'
+    )
+
+    self.user_means = self.user_item_matrix.mean(axis=1)
+    self.user_item_filled = self.user_item_matrix.fillna(0)
+
+    # Don't compute similarities now
+    self.user_similarity_df = None
+    self.item_similarity_df = None
+    self.movie_similarity_df = None
+
+    # Content-Based TF-IDF
+    self.movies_df['genres_clean'] = (
+        self.movies_df['genres']
+        .fillna('')
+        .str.replace('|', ' ', regex=False)
+    )
+
+    self.tfidf = TfidfVectorizer(token_pattern=r'(?u)\b\w+\b')
+    self.genre_matrix = self.tfidf.fit_transform(self.movies_df['genres_clean'])
+
+    # Movie lookup
+    self.movie_lookup = self.movies_df.set_index('movieId').to_dict('index')
+
+    def get_user_similarity(self):
+    if self.user_similarity_df is None:
+        similarity = cosine_similarity(self.user_item_filled)
+
         self.user_similarity_df = pd.DataFrame(
-            self.user_similarity, 
-            index=self.user_item_filled.index, 
+            similarity,
+            index=self.user_item_filled.index,
             columns=self.user_item_filled.index
         )
-        
-        # 3. Compute Item-Item Cosine Similarity
-        self.item_item_matrix = self.user_item_filled.T
-        self.item_similarity = cosine_similarity(self.item_item_matrix)
+
+    return self.user_similarity_df
+
+    def get_item_similarity(self):
+    if self.item_similarity_df is None:
+        item_matrix = self.user_item_filled.T
+
+        similarity = cosine_similarity(item_matrix)
+
         self.item_similarity_df = pd.DataFrame(
-            self.item_similarity,
-            index=self.item_item_matrix.index,
-            columns=self.item_item_matrix.index
+            similarity,
+            index=item_matrix.index,
+            columns=item_matrix.index
         )
-        
-        # 4. Content-Based features: one-hot or TF-IDF on genre string
-        # Clean genres string (replace '|' with ' ')
-        self.movies_df['genres_clean'] = self.movies_df['genres'].fillna('').apply(lambda x: x.replace('|', ' '))
-        self.tfidf = TfidfVectorizer(token_pattern=r'(?u)\b\w+\b') # Match single letters/words
-        self.genre_matrix = self.tfidf.fit_transform(self.movies_df['genres_clean'])
-        self.movie_similarity = cosine_similarity(self.genre_matrix)
+
+    return self.item_similarity_df
+
+    def get_movie_similarity(self):
+    if self.movie_similarity_df is None:
+        similarity = cosine_similarity(self.genre_matrix)
+
         self.movie_similarity_df = pd.DataFrame(
-            self.movie_similarity,
+            similarity,
             index=self.movies_df['movieId'],
             columns=self.movies_df['movieId']
         )
-        
-        # Movie ID lookup dictionary
-        self.movie_lookup = self.movies_df.set_index('movieId').to_dict('index')
+
+    return self.movie_similarity_df
 
     def get_user_watch_history(self, user_id, top_n=10):
         """Returns the top-rated movies for a given user."""
@@ -87,7 +112,9 @@ class MovieRecommender:
         unrated_movies = user_ratings[user_ratings.isna()].index
         
         # Find top K similar users (exclude user itself)
-        similar_users = self.user_similarity_df.loc[user_id].drop(user_id).sort_values(ascending=False).head(k)
+        user_similarity_df = self.get_user_similarity()
+
+        similar_users = user_similarity_df.loc[user_id].drop(user_id).sort_values(ascending=False).head(k)
         
         predicted_ratings = {}
         
@@ -143,10 +170,12 @@ class MovieRecommender:
         predicted_ratings = {}
         
         for movie_id in unrated_movies:
-            if movie_id not in self.item_similarity_df.index:
+            item_similarity_df = self.get_item_similarity()
+
+            if movie_id not in item_similarity_df.index:
                 continue
             # Similarity between this movie and all movies user rated
-            movie_sims = self.item_similarity_df.loc[movie_id, user_ratings.index]
+            movie_sims = item_similarity_df.loc[movie_id, user_ratings.index]
             
             # Select top K similar rated movies
             top_k_sims = movie_sims.sort_values(ascending=False).head(k)
@@ -175,10 +204,12 @@ class MovieRecommender:
 
     def recommend_content_similar(self, movie_id, top_n=10):
         """Content-Based: Find top N similar movies for a given movie ID."""
-        if movie_id not in self.movie_similarity_df.index:
+        movie_similarity_df = self.get_movie_similarity()
+
+        if movie_id not in movie_similarity_df.index:
             return []
             
-        sim_scores = self.movie_similarity_df.loc[movie_id].drop(movie_id)
+        sim_scores = movie_similarity_df.loc[movie_id]
         top_similar = sim_scores.sort_values(ascending=False).head(top_n)
         
         recommendations = []
